@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Women Awareness - Quiz Types</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('women_awareness_bg.jpg'); /* Replace with your background image */
+            background-size: cover;
+            background-repeat: no-repeat;
+            color: white;
+        }
+        #quiz-types-container {
+            width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        #quiz-types-container h1 {
+            margin-bottom: 20px;
+        }
+        .type-box {
+            padding: 15px 20px;
+            margin: 10px;
+            background-color: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div id="quiz-types-container">
+        <h1 id="topic-title"></h1>
+        <div class="type-box" data-type="quiz">Quiz</div>
+        <div class="type-box" data-type="riddle">Riddle</div>
+        <div class="type-box" data-type="jumble">Jumbled Words</div>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedTopic = urlParams.get("topic");
+
+        document.getElementById("topic-title").textContent = selectedTopic.toUpperCase();
+
+        const typeBoxes = document.querySelectorAll(".type-box");
+
+        typeBoxes.forEach(box => {
+            box.addEventListener("click", () => {
+                const selectedType = box.getAttribute("data-type");
+                loadQuestions(selectedTopic, selectedType);
+            });
+        });
+
+        function loadQuestions(topic, type) {
+            window.location.href = `questions.html?topic=${topic}&type=${type}`;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Women Awareness - Choose a Topic</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('women_awareness_bg.jpg'); /* Replace with your background image */
+            background-size: cover;
+            background-repeat: no-repeat;
+            color: white;
+        }
+        #topic-container {
+            width: 80%;
+            margin: 50px auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        .topic-box {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            padding: 20px;
+            cursor: pointer;
+            background-color: rgba(0, 0, 0, 0.7);
+            box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+        .topic-box span {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div id="topic-container">
+        <div class="topic-box" data-topic="education"><span>Education</span><span id="education-score"></span></div>
+        <div class="topic-box" data-topic="health"><span>Health</span><span id="health-score"></span></div>
+        <div class="topic-box" data-topic="rights"><span>Legal Rights</span><span id="rights-score"></span></div>
+        <div class="topic-box" data-topic="safety"><span>Safety</span><span id="safety-score"></span></div>
+        <div class="topic-box" data-topic="equality"><span>Equality</span><span id="equality-score"></span></div>
+        <div class="topic-box" data-topic="leadership"><span>Leadership</span><span id="leadership-score"></span></div>
+        <div class="topic-box" data-topic="history"><span>Women in History</span><span id="history-score"></span></div>
+        <div class="topic-box" data-topic="economy"><span>Economic Empowerment</span><span id="economy-score"></span></div>
+        <div class="topic-box" data-topic="violence"><span>Violence Awareness</span><span id="violence-score"></span></div>
+        <div class="topic-box" data-topic="media"><span>Media Representation</span><span id="media-score"></span></div>
+    </div>
+
+    <script>
+        const topicBoxes = document.querySelectorAll(".topic-box");
+
+        topicBoxes.forEach(box => {
+            box.addEventListener("click", () => {
+                const selectedTopic = box.getAttribute("data-topic");
+                loadQuizTypes(selectedTopic);
+            });
+        });
+
+        function loadQuizTypes(topic) {
+            window.location.href = `quiz_types.html?topic=${topic}`;
+        }
+
+        window.onload = function() {
+            const scores = JSON.parse(localStorage.getItem('womenAwarenessScores')) || {};
+            for (const topic in scores) {
+                const scoreElement = document.getElementById(`${topic}-score`);
+                if (scoreElement) {
+                    scoreElement.textContent = `Score: ${scores[topic]}`;
+                }
+            }
+        };
+    </script>
+</body>
+</html>

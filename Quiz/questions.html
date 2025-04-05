@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Women Awareness - Questions</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background-image: url('women_awareness_bg.jpg'); /* Replace with your background image */
+            background-size: cover;
+            background-repeat: no-repeat;
+            color: white;
+        }
+        #question-container {
+            width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+        .option {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+            text-align: left;
+            cursor: pointer;
+        }
+        #explanation {
+            margin-top: 20px;
+        }
+        #image-container {
+            display: flex;
+            justify-content: space-around;
+        }
+        #image-container img {
+            max-width: 200px;
+            max-height: 200px;
+        }
+        #user-answer {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+        }
+        #continue-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="question-container">
+        <h1 id="question-title"></h1>
+        <div id="question"></div>
+        <div id="options"></div>
+        <div id="image-container"></div>
+        <input type="text" id="user-answer" style="display: none;">
+        <div id="result"></div>
+        <button id="next-button">Next</button>
+        <div id="explanation"></div>
+        <button id="continue-button">Continue to next topic</button>
+    </div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const selectedTopic = urlParams.get("topic");
+        const selectedType = urlParams.get("type");
+
+        document.getElementById("question-title").textContent = `${selectedTopic.toUpperCase()} - ${selectedType.toUpperCase()}`;
+
+        let currentQuestion = 0;
+        let score = 0;
+        let questions = [];
+        let answers = [];
+        let explanations = [];
+        let correctAnswers = [];
+
+        function loadQuestions() {
+            const data = {
+                education: {
+                    quiz: {
+                        questions: ["What is a primary benefit of women's education?", "Which factor significantly hinders girls' access to education in some regions?", "Education contributes to women's empowerment primarily by fostering:","Which UN agency specifically focuses on girls' education?","What is a direct outcome of educating mothers on child health?","What is the typical correlation between girls' education and economic growth?","How does technology often enhance girls' education?","A key long-term benefit of investing in girls' education is:","Gender-sensitive education aims to improve:","A major challenge in providing education for girls in rural areas is:"],
+                        answers: [["Increased economic participation", "Improved social status", "Enhanced family health", "All of the above"],["Early marriage", "Lack of schools", "Poverty", "All of the above"],["Increased self-confidence", "Greater financial independence", "Improved decision-making skills", "All of the above"],["UNICEF", "WHO", "UNESCO", "World Bank"],["Decreased infant mortality", "Improved nutrition", "Better hygiene practices", "All of the above"], ["Directly proportional", "Inversely proportional", "No correlation", "Unpredictable correlation"], ["Increased access to resources", "Enhanced interactive learning", "Improved global communication", "All of the above"], ["Reduced poverty rates", "Increased gender equality", "Improved community health", "All of the above"],["Learning outcomes", "Reduced gender bias", "Increased participation", "All of the above"],["Lack of infrastructure", "Cultural barriers", "Limited resources", "All of the above"]],
+                        correctAnswers : ["Increased economic participation", "Early marriage", "Increased self-confidence", "UNICEF","Decreased infant mortality", "Directly proportional","Increased access to resources", "Reduced poverty rates", "Learning outcomes","Lack of infrastructure" ],
+                        explanations: ["Women's education leads to increased economic participation.","Early marriage is a significant barrier to girls' education.","Education empowers women by increasing self-confidence.", "UNICEF specifically focuses on girls' education.", "Educating mothers directly decreases infant mortality.", "Girls' education is typically directly proportional to economic growth.", "Technology enhances education by increasing access to resources.", "Investing in girls' education reduces poverty rates.", "Gender-sensitive education primarily improves learning outcomes.","Lack of infrastructure is a major challenge in rural education." ]
+                    },
+                    riddle: {
+                        questions: ["What is essential for a woman's well-being, but often overlooked until it's too late?", "I am a silent threat, affecting many women, but often go unnoticed. What am I?", "What is a woman's best friend in maintaining her health, but often ignored?", "I have cities, but no houses; forests, but no trees; and water, but no fish. What am I?", "What has an eye, but cannot see?", "What is full of holes but still holds water?", "What question can you never answer yes to?", "What has no voice but can still tell you stories?", "What is always coming but never arrives?", "What has a neck without a head, and a body without legs?"],
+                        answers: [ "Preventive healthcare","Stress","Regular checkups","A map","A needle","A sponge","Are you asleep yet?","A book", "Tomorrow", "A bottle"],
+                        correctAnswers : [ "Preventive healthcare","Stress", "Regular checkups", "A map", "A needle", "A sponge", "Are you asleep yet?","A book","Tomorrow","A bottle"],
+                        explanations: [ "Preventive care is crucial for early detection and management of health issues.","Stress affects many women's health but often goes unnoticed.","Regular checkups help maintain women's health.", "A map has these features, but is not a physical place.","A needle has an eye for threading, but cannot see.","A sponge has holes but can hold water.", "If you are asleep, you cannot answer yes.", "A book tells stories through its pages.","Tomorrow is always coming but never the present.","A bottle has a neck and a body but no head or legs."]
+                    },
+
+                    jumble: {
+                        questions: ["EQLAUITY","TISUJCE", "WEMENROWEP","TEACUDION","LITERACY","SCHOLARSHIP","KNOWLEDGE","OPPORTUNITY","EMANCIPATION","CURRICULUM"],
+                        answers: ["Equality","Justice","Women empowerment","Education","Literacy","Scholarship","Knowledge","Opportunity", "Emancipation","Curriculum"],
+                        correctAnswers : ["Equality","Justice","Women empowerment","Education","Literacy","Scholarship","Knowledge", "Opportunity","Emancipation","Curriculum"],
+                        explanations: [ "Equality refers to the state of being equal, especially in status, rights, and opportunities.","Justice is the fair treatment of individuals.",
+"Women empowerment is the process of increasing women's control over their own lives.",
+        "Education is the process of receiving or giving systematic instruction.",
+        "Literacy is the ability to read and write.",
+        "Scholarship is a grant or payment made to support a student's education.",
+        "Knowledge is information and skills acquired through experience or education.",
+        "Opportunity is a set of circumstances that makes it possible to do something.",
+        "Emancipation is the process of being set free from legal, social, or political restrictions.",
+        "Curriculum is the subjects comprising a course of study in a school or college."]
+                    },
+                    
+                },
+                health: {
+                    quiz: {
+                        questions: ["What is the importance of maternal health?", "What are common health issues women face?", "How does stress affect women's health?"],
+                        answers: [["Healthy pregnancy", "Safe childbirth", "Reduced infant mortality", "All of the above"], ["Menstrual issues", "Reproductive health problems", "Chronic diseases", "All of the above"], ["Hormonal imbalances", "Anxiety", "Depression", "All of the above"]],
+                        correctAnswers : ["All of the above", "All of the above", "All of the above"],
+                        explanations: ["Maternal health is crucial for healthy pregnancies and safe childbirth.", "Women face various health issues, including menstrual problems and chronic diseases.", "Stress can lead to hormonal imbalances, anxiety, and depression in women."]
+                    },
+                    riddle: {
+                        questions: ["I am a monthly visitor, often unwelcome, but essential. What am I?", "What is a woman's body's way of preparing for new life?", "I am a silent killer, affecting many women, but often ignored. What am I?"],
+                        answers: ["Menstruation", "Ovulation", "High blood pressure"],
+                        correctAnswers : ["Menstruation", "Ovulation", "High blood pressure"],
+                        explanations: ["Menstruation is a natural monthly process.", "Ovulation prepares a woman's body for potential pregnancy.", "High blood pressure is a silent killer affecting many women."]
+                    },
+                    jumble: {
+                        questions: ["TRENUSMATION", "VULAOTION", "PREGNANCY"],
+                        answers: ["Menstruation", "Ovulation", "Pregnancy"],
+                        correctAnswers : ["Menstruation", "Ovulation", "Pregnancy"],
+                        explanations: ["Menstruation is the monthly shedding of the uterine lining.", "Ovulation is the release of an egg from the ovary.", "Pregnancy is the period of carrying a developing fetus."]
+                    },
+                    connection: {
+                        questions: [["image21.jpg", "image22.jpg"], ["image23.jpg", "image24.jpg"], ["image25.jpg", "image26.jpg"]], //replace with your images
+                        answers: ["Breast cancer awareness", "Mental health support", "Prenatal care"],
+                        correctAnswers : ["Breast cancer awareness", "Mental health support", "Prenatal care"],
+                        explanations: ["The images represent the importance of breast cancer awareness.", "Mental health support is crucial for women's well-being.", "Prenatal care ensures healthy pregnancies."]
+                    }
+                },
+                rights: {
+                    quiz: {
+                        questions: ["What are fundamental human rights for women?", "What is gender equality in legal terms?", "How does discrimination affect women's rights?"],
+                        answers: [["Right to education", "Right to work", "Right to vote", "All of the above"], ["Equal treatment under the law", "Equal opportunities", "Equal protection", "All of the above"], ["Limited access to resources", "Economic inequality", "Social exclusion", "All of the above"]],
+                        correctAnswers : ["All of the above", "All of the above", "All of the above"],
+                        explanations: ["Fundamental human rights include the right to education, work, and vote.", "Gender equality means equal treatment, opportunities, and protection under the law.", "Discrimination leads to limited access to resources, economic inequality, and social exclusion."]
+                    },
+                    riddle: {
+                        questions: ["I am a right, often denied, but essential for women's progress. What am I?", "What is a woman's power to make her own choices?", "I am a barrier, often invisible, but hindering women's advancement. What am I?"],
+                        answers: ["Education", "Autonomy", "Gender bias"],
+                        correctAnswers : ["Education", "Autonomy", "Gender bias"],
+                        explanations: ["Education empowers women and is crucial for their progress.", "Autonomy is a woman's power to make her own choices.", "Gender bias is an invisible barrier hindering women's advancement."]
+                    },
+                    jumble: {
+                        questions: ["AUTONOMY", "DISCRIMINATION", "EQUALITY"],
+                        answers: ["Autonomy", "Discrimination", "Equality"],
+                        correctAnswers : ["Autonomy", "Discrimination", "Equality"],
+                        explanations: ["Autonomy is the right or condition of self-government.", "Discrimination is the unjust or prejudicial treatment of different categories of people or things, especially on the grounds of race, age, or sex.", "Equality is the state of being equal, especially in status, rights, or opportunities."]
+                    },
+                    connection: {
+                        questions: [["image41.jpg", "image42.jpg"], ["image43.jpg", "image44.jpg"], ["image45.jpg", "image46.jpg"]], //replace with your images
+                        answers: ["Legal aid", "Human rights", "Gender equality"],
+                        correctAnswers : ["Legal aid", "Human rights", "Gender equality"],
+                        explanations: ["Legal aid provides assistance to women seeking justice.", "Human rights are fundamental rights for all women.", "Gender equality ensures equal treatment under the law."]
+                    }
+                },
+                safety: {
+                    quiz: {
+                        questions: ["What are common forms of violence against women?", "What are the effects of domestic violence?", "How can women protect themselves from sexual assault?"],
+                        answers: [["Physical violence", "Sexual violence", "Emotional abuse", "All of the above"], ["Physical injuries", "Emotional trauma", "Financial instability", "All of the above"], ["Self-defense techniques", "Awareness of surroundings", "Reporting incidents", "All of the above"]],
+                        correctAnswers : ["All of the above", "All of the above", "All of the above"],
+                        explanations: ["Violence against women includes physical, sexual, and emotional abuse.", "Domestic violence can cause physical injuries, emotional trauma, and financial instability.", "Women can protect themselves through self-defense, awareness, and reporting incidents."]
+                    },
+                    riddle: {
+                        questions: ["I am a silent threat, often hidden in plain sight. What am I?", "What is a woman's right to be free from harm?", "I am a weapon, often used to control and manipulate. What am I?"],
+                        answers: ["Domestic violence", "Personal safety", "Emotional abuse"],
+                        correctAnswers : ["Domestic violence", "Personal safety", "Emotional abuse"],
+                        explanations: ["Domestic violence is a silent threat hidden in plain sight.", "Personal safety is a woman's right to be free from harm.", "Emotional abuse is used to control and manipulate."]
+                    },
+                    jumble: {
+                        questions: ["ABUSE", "ASSAULT", "HARASSMENT"],
+                        answers: ["Abuse", "Assault", "Harassment"],
+                        correctAnswers : ["Abuse", "Assault", "Harassment"],
+                        explanations: ["Abuse is cruel and violent treatment of a person.", "Assault is an illegal physical attack on someone.", "Harassment is aggressive pressure or intimidation."]
+                    },
+                    connection: {
+                        questions: [["image61.jpg", "image62.jpg"], ["image63.jpg", "image64.jpg"], ["image65.jpg", "image66.jpg"]], //replace with your images
+                        answers: ["Self-defense classes", "Safety apps", "Support groups"],
+                        correctAnswers : ["Self-defense classes", "Safety apps", "Support groups"],
+                        explanations: ["Self-defense classes empower women to protect themselves.", "Safety apps enhance women's safety with emergency features.", "Support groups provide emotional support for survivors."]
+                    }
+                },
+                equality: {
+                    quiz: {
+                        questions: ["What is gender equality?", "What are the benefits of gender equality?", "How does gender inequality affect women?"],
+                        answers: [["Equal rights and opportunities", "Equal treatment under the law", "Equal representation", "All of the above"], ["Economic growth", "Social progress", "Improved well-being", "All of the above"], ["Limited access to resources", "Discrimination", "Violence", "All of the above"]],
+                        correctAnswers : ["All of the above", "All of the above", "All of the above"],
+                        explanations: ["Gender equality means equal rights, opportunities, and treatment for all genders.", "Gender equality leads to economic growth, social progress, and improved well-being.", "Gender inequality limits women's access to resources and exposes them to discrimination and violence."]
+                    },
+                    riddle: {
+                        questions: ["I am a goal, often aspired to, but rarely achieved. What am I?", "What is the state of being equal, especially in rights and opportunities?", "I am a barrier, often invisible, but hindering progress. What am I?"],
+                        answers: ["Gender equality", "Equality", "Gender bias"],
+                        correctAnswers : ["Gender equality", "Equality", "Gender bias"],
+                        explanations: ["Gender equality is a goal aspired to, but rarely achieved.", "Equality is the state of being equal, especially in rights and opportunities.", "Gender bias is an invisible barrier hindering progress."]
+                    },
+                    jumble: {
+                        questions: ["GENDER", "EQUALITY", "EMPOWERMENT"],
+                        answers: ["Gender", "Equality", "Empowerment"],
+                        correctAnswers : ["Gender", "Equality", "Empowerment"],
+                        explanations: ["Gender refers to the characteristics of women, men, girls and boys that are socially constructed.", "Equality is the state of being equal, especially in status, rights, or opportunities.", "Empowerment is the process of becoming stronger and more confident, especially in controlling one's life and claiming one's rights."]
+                    },
+                    connection: {
+                        questions: [["image81.jpg", "image82.jpg"], ["image83.jpg", "image84.jpg"], ["image85.jpg", "image86.jpg"]], //replace with your images
+                        answers: ["Gender equality", "Women's empowerment", "Equal rights"],
+                        correctAnswers : ["Gender equality", "Women's empowerment", "Equal rights"],
+                        explanations: ["The images represent the importance of gender equality.", "Women's empowerment is crucial for achieving gender equality.", "Equal rights are essential for gender equality."]
+                    }
+                },
+                leadership: {
+                    quiz: {
+                        questions: ["What are the benefits of women's leadership?", "What are the challenges women face in leadership roles?", "How can women overcome these challenges?"],
+                        answers: [["Diverse perspectives", "Improved decision-making", "Enhanced innovation", "All of the above"], ["Gender bias", "Lack of support", "Work-life balance", "All of the above"], ["Mentorship", "Networking", "Skill development", "All of the above"]],
+                        correctAnswers : ["All of the above", "All of the above", "All of the above"],
+                        explanations: ["Women's leadership brings diverse perspectives, improves decision-making, and enhances innovation.", "Women face challenges like gender bias, lack of support, and work-life balance in leadership roles.", "Mentorship, networking, and skill development can help women overcome these challenges."]
+                    },
+                    riddle: {
+                        questions: ["I am a force, often underestimated, but powerful in leadership. What am I?", "What is a woman's ability to lead and inspire others?", "I am a barrier, often invisible, but hindering women's leadership. What am I?"],
+                        answers: ["Women's leadership", "Influence", "Glass ceiling"],
+                        correctAnswers : ["Women's leadership", "Influence", "Glass ceiling"],
+                        explanations: ["Women's leadership is a force, often underestimated, but powerful.", "Influence is a woman's ability to lead and inspire others.", "The glass ceiling is an invisible barrier hindering women's leadership."]
+                    },
+                    jumble: {
+                        questions: ["LEADERSHIP", "INFLUENCE", "MENTORSHIP"],
+                        answers: ["Leadership", "Influence", "Mentorship"],
+                        correctAnswers : ["Leadership", "Influence", "Mentorship"],
+                        explanations: ["Leadership is the action of leading a group of people or an organization.", "Influence is the capacity to have an effect on the character, development, or behavior of someone or something.", "Mentorship is the guidance or advice provided by a mentor."]
+                    },
+                    connection: {
+                        questions: [["image91.jpg", "image92.jpg"], ["image93.jpg", "image94.jpg"], ["image95.jpg", "image96.jpg"]], //replace with your images
+                        answers: ["Leadership roles", "Women in power", "Breaking barriers"],
+                        correctAnswers : ["Leadership roles", "Women in power", "Breaking barriers"],
+                        explanations: ["The images represent women in leadership roles.", "Women in power are essential for gender equality.", "Women are breaking barriers in leadership."]
+                    }
+                },
+                history: {
+                    quiz: {
+                        questions: ["Who are some influential women in history?", "What are the contributions of women to science?", "How have women shaped political movements?"],
+                        answers: [["Marie Curie", "Rosa Parks", "Malala Yousafzai", "All of the above"], ["Discoveries", "Inventions", "Scientific theories", "All of the above"], ["Suffrage movement", "Civil rights movement", "Feminist movements", "All of the above"]],
+                        correctAnswers : ["All of the above", "All of the above", "All of the above"],
+                        explanations: ["Marie Curie, Rosa Parks, and Malala Yousafzai are some influential women in history.", "Women have contributed to science through discoveries, inventions, and scientific theories.", "Women have shaped political movements like the suffrage movement, civil rights movement, and feminist movements."]
+                    },
+                    riddle: {
+                        questions: ["I am a story, often untold, but essential to understanding our past. What am I?", "What is a woman's legacy that inspires future generations?", "I am a struggle, often overlooked, but crucial for women's progress. What am I?"],
+                        answers: ["Women's history", "Inspiration", "Women's rights movement"],
+                        correctAnswers : ["Women's history", "Inspiration", "Women's rights movement"],
+                        explanations: ["Women's history is a story, often untold, but essential to understanding our past.", "Inspiration is a woman's legacy that inspires future generations.", "The women's rights movement is a struggle, often overlooked, but crucial for women's progress."]
+                    },
+                    jumble: {
+                        questions: ["HISTORY", "INSPIRATION", "LEGACY"],
+                        answers: ["History", "Inspiration", "Legacy"],
+                        correctAnswers : ["History", "Inspiration", "Legacy"],
+                        explanations: ["History is the study of past events, particularly in human affairs.", "Inspiration is the process of being mentally stimulated to do or feel something, especially to do something creative.", "Legacy is something handed down or received from an ancestor or predecessor."]
+                    },
+                    connection: {
+                        questions: [["image101.jpg", "image102.jpg"], ["image103.jpg", "image104.jpg"], ["image105.jpg", "image106.jpg"]], //replace with your images
+                        answers: ["Women in history", "Historical figures", "Women's contributions"],
+                        correctAnswers : ["Women in history", "Historical figures", "Women's contributions"],
+                        explanations: ["The images represent women in history.", "Historical figures have shaped women's history.", "Women's contributions are essential to understanding our past."]
+                    }
+                },
+                economy: {
+                    quiz: {
+                        questions: ["What are the benefits of women's economic empowerment?", "What are the barriers to women's economic participation?", "How can women achieve economic independence?"],
+                        answers: [["Economic growth", "Poverty reduction", "Improved family well-being", "All of the above"], ["Lack of access to resources", "Gender pay gap", "Work-life balance", "All of the above"], ["Education", "Entrepreneurship", "Financial literacy", "All of the above"]],
+                        correctAnswers : ["All of the above", "All of the above", "All of the above"],
+                        explanations: ["Women's economic empowerment leads to economic growth, poverty reduction, and improved family well-being.", "Women face barriers like lack of access to resources, the gender pay gap, and work-life balance in economic participation.", "Education, entrepreneurship, and financial literacy can help women achieve economic independence."]
+                    },
+                    riddle: {
+                        questions: ["I am a key to unlocking women's potential in the economy. What am I?", "What is a woman's ability to earn and control her own income?", "I am a barrier, often invisible, but hindering women's economic progress. What am I?"],
+                        answers: ["Economic empowerment", "Financial independence", "Gender pay gap"],
+                        correctAnswers : ["Economic empowerment", "Financial independence", "Gender pay gap"],
+                        explanations: ["Economic empowerment is a key to unlocking women's potential in the economy.", "Financial independence is a woman's ability to earn and control her own income.", "The gender pay gap is an invisible barrier hindering women's economic progress."]
+                    },
+                    jumble: {
+                        questions: ["EMPOWERMENT", "INDEPENDENCE", "ENTREPRENEURSHIP"],
+                        answers: ["Empowerment", "Independence", "Entrepreneurship"],
+                        correctAnswers : ["Empowerment", "Independence", "Entrepreneurship"],
+                        explanations: ["Empowerment is the process of becoming stronger and more confident, especially in controlling one's life and claiming one's rights.", "Independence is the condition of being independent.", "Entrepreneurship is the activity of setting up a business or businesses, taking on financial risks in the hope of profit."]
+                    },
+                    connection: {
+                        questions: [["image111.jpg", "image112.jpg"], ["image113.jpg", "image114.jpg"], ["image115.jpg", "image116.jpg"]], //replace with your images
+                        answers: ["Economic empowerment", "Financial independence", "Women entrepreneurs"],
+                        correctAnswers : ["Economic empowerment", "Financial independence", "Women entrepreneurs"],
+                        explanations: ["The images represent women's economic empowerment.", "Financial independence is essential for women's economic empowerment.", "Women entrepreneurs are driving economic growth."]
+                    }
+                },
+                violence: {
+                    quiz: {
+                        questions: ["What are the types of violence against women?", "What are the effects of violence on women?", "How can violence against women be prevented?"],
+                        answers: [["Physical violence", "Sexual violence", "Emotional abuse", "All of the above"], ["Physical injuries", "Emotional trauma", "Financial instability", "All of the above"], ["Education", "Legal protection", "Support services", "All of the above"]],
+                        correctAnswers : ["All of the above", "All of the above", "All of the above"],
+                        explanations: ["Violence against women includes physical violence, sexual violence, and emotional abuse.", "Violence can cause physical injuries, emotional trauma, and financial instability for women.", "Education, legal protection, and support services can help prevent violence against women."]
+                    },
+                    riddle: {
+                        questions: ["I am a silent epidemic, affecting millions of women worldwide. What am I?", "What is a woman's right to live free from violence?", "I am a tool, often used to control and manipulate women. What am I?"],
+                        answers: ["Violence against women", "Safety", "Abuse"],
+                        correctAnswers : ["Violence against women", "Safety", "Abuse"],
+                        explanations: ["Violence against women is a silent epidemic, affecting millions of women worldwide.", "Safety is a woman's right to live free from violence.", "Abuse is a tool, often used to control and manipulate women."]
+                    },
+                    jumble: {
+                        questions: ["VIOLENCE", "ABUSE", "PREVENTION"],
+                        answers: ["Violence", "Abuse", "Prevention"],
+                        correctAnswers : ["Violence", "Abuse", "Prevention"],
+                        explanations: ["Violence is behavior involving physical force intended to hurt, damage, or kill someone or something.", "Abuse is cruel and violent treatment of a person.", "Prevention is the action of stopping something from happening or arising."]
+                    },
+                    connection: {
+                        questions: [["image121.jpg", "image122.jpg"], ["image123.jpg", "image124.jpg"], ["image125.jpg", "image126.jpg"]], //replace with your images
+                        answers: ["Violence awareness", "Support for survivors", "Ending violence"],
+                        correctAnswers : ["Violence awareness", "Support for survivors", "Ending violence"],
+                        explanations: ["The images represent violence awareness.", "Support for survivors is essential in ending violence against women.", "We must work together to end violence against women."]
+                    }
+                },
+                media: {
+                    quiz: {
+                        questions: ["What is the impact of media representation on women?", "What are the stereotypes perpetuated by media?", "How can media promote positive representation of women?"],
+                        answers: [["Reinforces stereotypes", "Shapes perceptions", "Influences self-esteem", "All of the above"], ["Objectification", "Lack of diversity", "Limited roles", "All of the above"], ["Diverse representation", "Challenging stereotypes", "Amplifying women's voices", "All of the above"]],
+                        correctAnswers : ["All of the above", "All of the above", "All of the above"],
+                        explanations: ["Media representation impacts women by reinforcing stereotypes, shaping perceptions, and influencing self-esteem.", "Media perpetuates stereotypes like objectification, lack of diversity, and limited roles for women.", "Media can promote positive representation of women through diverse representation, challenging stereotypes, and amplifying women's voices."]
+                    },
+                    riddle: {
+                        questions: ["I am a powerful tool, shaping perceptions of women in society. What am I?", "What is a woman's right to be represented fairly in media?", "I am a barrier, often invisible, but hindering women's progress in media. What am I?"],
+                        answers: ["Media", "Representation", "Stereotypes"],
+                        correctAnswers : ["Media", "Representation", "Stereotypes"],
+                        explanations: ["Media is a powerful tool, shaping perceptions of women in society.", "Representation is a woman's right to be represented fairly in media.", "Stereotypes are an invisible barrier hindering women's progress in media."]
+                    },
+                    jumble: {
+                        questions: ["REPRESENTATION", "STEREOTYPES", "DIVERSITY"],
+                        answers: ["Representation", "Stereotypes", "Diversity"],
+                        correctAnswers : ["Representation", "Stereotypes", "Diversity"],
+                        explanations: ["Representation is the depiction or portrayal of someone or something in a particular way.", "Stereotypes are widely held but fixed and oversimplified image or idea of a particular type of person or thing.", "Diversity is the state of being diverse; variety."]
+                    },
+                    connection: {
+                        questions: [["image131.jpg", "image132.jpg"], ["image133.jpg", "image134.jpg"], ["image135.jpg", "image136.jpg"]], //replace with your images
+                        answers: ["Media representation", "Positive portrayals", "Breaking stereotypes"],
+                        correctAnswers : ["Media representation", "Positive portrayals", "Breaking stereotypes"],
+                        explanations: ["The images represent media representation of women.", "Positive portrayals of women are essential in media.", "We must break stereotypes in media."]
+                    }
+                }
+            };
+
+            questions = data[selectedTopic][selectedType].questions;
+            answers = data[selectedTopic][selectedType].answers;
+            explanations = data[selectedTopic][selectedType].explanations;
+            correctAnswers = data[selectedTopic][selectedType].correctAnswers;
+
+            showQuestion();
+        }
+
+        function showQuestion() {
+            if (currentQuestion >= questions.length) {
+                showResult();
+                return;
+            }
+
+            document.getElementById("question").textContent = questions[currentQuestion];
+            document.getElementById("options").innerHTML = "";
+            document.getElementById("image-container").innerHTML = "";
+            document.getElementById("user-answer").style.display = "none";
+            document.getElementById("continue-button").style.display = "none";
+
+            if (selectedType === "connection") {
+                const images = questions[currentQuestion];
+                images.forEach(image => {
+                    const img = document.createElement("img");
+                    img.src = image;
+                    document.getElementById("image-container").appendChild(img);
+                });
+                document.getElementById("user-answer").style.display = "block";
+            } else if (selectedType === "riddle" || selectedType === "jumble") {
+                document.getElementById("user-answer").style.display = "block";
+            } else {
+                answers[currentQuestion].forEach(option => {
+                    const button = document.createElement("button");
+                    button.textContent = option;
+                    button.classList.add("option");
+                    button.addEventListener("click", () => checkAnswer(option));
+                    document.getElementById("options").appendChild(button);
+                });
+            }
+
+            document.getElementById("result").textContent = "";
+            document.getElementById("explanation").textContent = "";
+            document.getElementById("next-button").style.display = "block";
+        }
+
+        function checkAnswer(selectedAnswer) {
+            let isCorrect = false;
+            let userAnswer = selectedAnswer;
+
+            if (selectedType === "connection" || selectedType === "riddle" || selectedType === "jumble") {
+                userAnswer = document.getElementById("user-answer").value;
+                isCorrect = userAnswer.toLowerCase() === correctAnswers[currentQuestion].toLowerCase();
+            } else {
+                isCorrect = selectedAnswer === correctAnswers[currentQuestion];
+            }
+
+            if (isCorrect) {
+                document.getElementById("result").textContent = "Correct!";
+                score++;
+            } else {
+                document.getElementById("result").textContent = "Incorrect!";
+            }
+
+            document.getElementById("explanation").textContent = explanations[currentQuestion];
+        }
+
+        function showResult() {
+            document.getElementById("question").textContent = `Your score for ${selectedType}: ${score} out of ${questions.length}`;
+            document.getElementById("options").innerHTML = "";
+            document.getElementById("image-container").innerHTML = "";
+            document.getElementById("user-answer").style.display = "none";
+            document.getElementById("result").textContent = "";
+            document.getElementById("explanation").textContent = "";
+            document.getElementById("next-button").style.display = "none";
+            document.getElementById("continue-button").style.display = "block";
+            saveScore();
+        }
+
+        function saveScore() {
+            const scores = JSON.parse(localStorage.getItem('womenAwarenessScores')) || {};
+            if (!scores[selectedTopic]) {
+                scores[selectedTopic] = {};
+            }
+            scores[selectedTopic][selectedType] = score;
+            localStorage.setItem('womenAwarenessScores', JSON.stringify(scores));
+        }
+
+        document.getElementById("next-button").addEventListener("click", () => {
+            currentQuestion++;
+            showQuestion();
+        });
+
+        document.getElementById("continue-button").addEventListener("click", () => {
+            const types = ["quiz", "riddle", "jumble", "connection"];
+            const currentIndex = types.indexOf(selectedType);
+            const nextIndex = (currentIndex + 1) % types.length; // Loop back to the first type
+            const nextType = types[nextIndex];
+
+            if (nextType === "quiz") {
+                const topics = ["education", "health", "rights", "safety", "equality", "leadership", "history", "economy", "violence", "media"];
+                const currentTopicIndex = topics.indexOf(selectedTopic);
+                const nextTopicIndex = (currentTopicIndex + 1) % topics.length;
+                const nextTopic = topics[nextTopicIndex];
+                window.location.href = `index.html?topic=${nextTopic}&type=${nextType}`;
+            } else {
+                window.location.href = `index.html?topic=${selectedTopic}&type=${nextType}`;
+            }
+
+        });
+
+        loadQuestions();
+    </script>
+</body>
+</html>
