@@ -30,14 +30,14 @@ header {
     color: rgb(233, 19, 19);
     cursor: pointer;
     padding: 8px 12px;
-    font-size: 1em;
+    font-size: 2em;
     border-radius: 5px;
     display: flex;
     align-items: center;
 }
 
 #settings-btn i {
-    margin-right: 1px;
+    margin-right: 5px;
 }
 
 .dropdown-content {
@@ -74,14 +74,14 @@ header {
     color: rgb(212, 36, 36);
     cursor: pointer;
     padding: 8px 12px;
-    font-size: 1em;
+    font-size: 2em;
     border-radius: 5px;
     display: flex;
     align-items: center;
 }
 
 .profile-info button i {
-    margin-left: 5px;
+    margin-right: 5px;
 }
 
 .top-image-container {
